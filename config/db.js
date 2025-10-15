@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const config = require('./index');
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://fake:fake@localhost:27017/habitapp', {
+    await mongoose.connect(config.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
