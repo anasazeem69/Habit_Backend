@@ -1,4 +1,4 @@
-const { registerUser, registerWithOTP, loginUser, requestOTP, verifyOTP } = require('../../services/v1/authService');
+const { registerUser, registerWithOTP, loginUser, requestOTP, verifyOTP, forgotPassword, resetPassword } = require('../../services/v1/authService');
 
 exports.register = async (req, res) => {
   console.log('Register API hit', req.body);
@@ -62,6 +62,41 @@ exports.verifyOTP = async (req, res) => {
     });
   } catch (err) {
     console.error('❌ Verify OTP failed:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  console.log('🔑 Forgot Password API hit for email:', req.body.email);
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+    const result = await forgotPassword(email);
+    console.log('✅ Forgot password request processed for:', email);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error('❌ Forgot password failed:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  console.log('🔄 Reset Password API hit for email:', req.body.email);
+  try {
+    const { email, newPassword } = req.body;
+    if (!email || !newPassword) {
+      return res.status(400).json({ error: 'Email and new password are required' });
+    }
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters long' });
+    }
+    const result = await resetPassword(email, newPassword);
+    console.log('✅ Password reset successfully for:', email);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error('❌ Reset password failed:', err.message);
     res.status(400).json({ error: err.message });
   }
 };
